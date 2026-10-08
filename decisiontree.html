@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding Digital Resources: Years 7–10</title>
+
+<!--
+  HOW TO EDIT THIS FILE
+  ---------------------
+  Everything you will want to change is in the block marked "EDIT YOUR MAP HERE"
+  inside the <script> near the bottom of this file.
+
+  Each bubble (node) looks like this:
+
+    {
+      text:   "Bubble title",                 // required
+      detail: "A short explanation",          // optional
+      image:  "images/my-picture.png",        // optional: file in your repo, or a full web address
+      alt:    "Describe the picture",         // please add this when you add an image
+      link:   "https://example.com",          // optional: adds an "Open resource" button
+      linkLabel: "Open PhET",                 // optional: changes the button wording
+      open:   true,                           // optional: true = starts expanded
+      children: [ ...more nodes... ]          // optional: the next bubbles along
+    }
+
+  To add a bubble: copy one { ... } block and paste it inside a "children" list.
+  Remember the comma between blocks.
+  To remove a bubble: delete its { ... } block.
+-->
+
+<style>
+  :root {
+    --bg: #f0f0e8;
+    --ink: #1d2733;
+    --muted: #5b6776;
+    --card: #ffffff;
+    --line: #b9c2cf;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151b23;
+      --ink: #e8edf3;
+      --muted: #9aa7b6;
+      --card: #1f2833;
+      --line: #4a5668;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  header { padding: 18px 20px 4px; }
+  header h1 { margin: 0 0 4px; font-size: 1.3rem; }
+  header p  { margin: 0; color: var(--muted); font-size: .92rem; }
+  .toolbar { padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .toolbar button {
+    font: inherit; font-size: .85rem; cursor: pointer;
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  .toolbar button:hover { border-color: var(--ink); }
+
+  /* The scrollable canvas */
+  .viewport {
+    overflow: auto;
+    padding: 20px;
+    min-height: 480px;
+  }
+  .map { position: relative; display: inline-block; min-width: 100%; }
+  .map svg { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+
+  /* Tree layout: each branch = node + its children column */
+  .branch { display: flex; align-items: center; }
+  .children {
+    display: flex; flex-direction: column; gap: 14px;
+    margin-left: 56px;
+  }
+  .children[hidden] { display: none; }
+  .branch + .branch { margin-top: 0; }
+
+  .node {
+    position: relative;
+    width: 230px; flex: 0 0 auto;
+    background: var(--card);
+    border: 2px solid var(--c, var(--line));
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    text-align: left;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .node.root {
+    background: var(--c);
+    color: #fff;
+    border-color: var(--c);
+    width: 220px;
+    font-weight: 600;
+  }
+  .node.root .detail { color: rgba(255,255,255,.9); }
+  .node.has-kids { cursor: pointer; }
+  .node.has-kids:hover { box-shadow: 0 3px 10px rgba(0,0,0,.15); }
+  .node:focus-visible { outline: 3px solid #f2a900; outline-offset: 2px; }
+
+  .node .title { font-weight: 600; font-size: .95rem; padding-right: 22px; }
+  .node .detail { font-size: .82rem; color: var(--muted); margin-top: 4px; }
+  .node img {
+    display: block; width: 100%; max-height: 120px; object-fit: cover;
+    border-radius: 8px; margin-bottom: 8px;
+  }
+  .node .toggle {
+    position: absolute; right: 8px; top: 8px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--c, var(--line)); color: #fff;
+    font-size: .8rem; line-height: 20px; text-align: center; font-weight: 700;
+  }
+  .node.root .toggle { background: rgba(255,255,255,.3); }
+  .node a.open-link {
+    display: inline-block; margin-top: 8px;
+    font-size: .8rem; font-weight: 600; text-decoration: none;
+    color: #fff; background: var(--c, #2f6fb5);
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .node a.open-link:hover { filter: brightness(1.1); }
+
+  .legend { padding: 0 20px 20px; color: var(--muted); font-size: .8rem; }
+
+  @media (max-width: 600px) {
+    .node { width: 190px; }
+    .children { margin-left: 38px; }
+  }
+</style>
+</head>
+<body>
+
+
+
+<div class="toolbar">
+  <button type="button" id="expandAll">Expand all</button>
+  <button type="button" id="collapseAll">Collapse all</button>
+</div>
+
+<div class="viewport" id="viewport">
+  <div class="map" id="map"></div>
+</div>
+
+<div class="legend">Tip: on a small screen, drag or scroll sideways to follow the branches.</div>
+
+<script>
+/* ==========================================================================
+   EDIT YOUR MAP HERE
+   Change the text, add images, add links. Keep the commas and brackets.
+   The example resources below are starting points. Replace them with the
+   ones you actually use and trust.
+   ========================================================================== */
+
+const MAP = {
+  text: "Science Year 7-10",
+  detail: "Digital Tool Kit",
+  open: true,
+  children: [
+{
+      text: "All Year Levels",
+      detail: "",
+      color: "#8a4fb0",
+      open: true,
+  children: [
+        {
+          text: "Studying for Assessments",
+          detail: "Personal Tutor",
+          children: [
+            {
+              text: "ChatGPT",
+          detail: "Use the AI platform for practice questions and personilised studying materials",
+                    image: "img/ChatGPT.png",
+          link: "https://chatgpt.com/",
+          linkLabel: "Open ChatGPT"
+            }
+          ]
+        },
+        
+      ]
+    },
+   {
+  text: "Year 7",
+  detail: "",
+  color: "#2f6fb5",
+  open: true,
+  children: [
+    {
+      text: "Observing the Universe",
+      detail: "SC4-OTU-01: explains how observations are used by scientists to increase knowledge and understanding of the Universe",
+      children: [
+        {
+          text: "Solar System Scope",
+          detail: "Great nteractive to explore the solar system!",
+          image: "img/solarsystem.png",
+          alt: "Khan Academy forces lesson screenshot",
+          link: "https://www.solarsystemscope.com/",
+          linkLabel: "Go to interactive",
+          children: [
+            {
+              text: "Worksheet",
+              detail: "Worksheet for interactive",
+              link: "pdf/solarsystem.pdf",
+              linkLabel: "Download worksheet"
+            }
+          ]
+        }
+      ]
+    },                                            // ← comma added here
+    {
+      text: "Forces",
+      detail: "SC4-FOR-01: describes the effects of forces in everyday contexts",
+      children: [
+        {
+          text: "Breaking Distance - Friction",
+          detail: "Identifying scientific variables and exploring friction",
+          image: "img/breakingdistance.png",
+          alt: "Khan Academy forces lesson screenshot",
+          link: "https://www.scootle.edu.au/ec/viewing/L52/L52/index.html#",
+          linkLabel: "Open interactive",
+           children: [
+            {
+              text: "Worksheet",
+              detail: "Worksheet for interactive",
+              link: "pdf/Breakingdistance.pdf",
+              linkLabel: "Download worksheet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      text: "Cells and Classification",
+      detail: "SC4-CLS-01: describes the unique features of cells in living things and how structural features can be used to classify organisms",
+      children: [
+        {
+          text: "Virtual Scanning Electron Microscope",
+          detail: "Simulation to observe bacteria.",
+          image: "img/SEMMicroscope.png",
+          link: "https://myscope-explore.org.au/virtualSEM_explore.html",
+          linkLabel: "Open Simulation",
+          children: [
+            {
+              text: "Worksheet",
+              detail: "Worksheet for Simulation",
+              link: "pdf/SEMDetective.pdf",
+              linkLabel: "Download worksheet"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      text: "Solutions and mixtures",
+      detail: "SC4-SOL-01: explains how the properties of substances enable separation in a range of techniques",
+      children: [
+        {
+          text: "PhET States of Matter Interactive",
+          detail: "Explore the changes in states of matter.",
+                    image: "img/statesofmatter.png",
+          link: "https://phet.colorado.edu/sims/html/states-of-matter-basics/latest/states-of-matter-basics_en.html",
+          linkLabel: "Open interactive"
+        }
+      ]
+    }
+  ]
+},
+
+    {
+      text: "Year 8",
+      detail: "",
+      color: "#2e8b57",
+      open: true,
+      children: [
+        {
+          text: "Living Systems",
+          detail: "SC4-LIV-01: describes the role, structure and function of a range of living systems and their components",
+          children: [
+            {
+              text: "Adventures of Wally - Circulatory System",
+              detail: "Digital Storytelling",
+               image: "img/Wally.png",
+              link: "https://asogerst.github.io/Adventuresofwally/ ",
+              linkLabel: "Go to story"
+            }
+          ]
+        },
+        {
+          text: "Periodic Table and Atomic Structure",
+          detail: "SC4-PRT-01: explains how uses of elements and compounds are influenced by scientific understanding and discoveries relating to their properties",
+          children: [
+            {
+              text: "PhET Build an Atom",
+          detail: "Explore the atomic structure",
+                    image: "img/atom.png",
+          link: "https://phet.colorado.edu/en/simulations/build-an-atom",
+          linkLabel: "Open interactive"
+            }
+          ]
+        },
+         {
+          text: "Change",
+          detail: "SC4-CHG-01: explains how energy causes geological and chemical change",
+          children: [
+            {
+              text: "Tectonic Boundaries",
+          detail: "Investigate the movement of tectonic plates.",
+                    image: "img/tectonics.png",
+          link: "https://www.scootle.edu.au/ec/viewing/L5830/L5830/index.html",
+          linkLabel: "Open interactive"
+            }
+          ]
+        },
+        
+      ]
+    },
+
+    {
+      text: "Year 9",
+      detail: "",
+      color: "#c26a1b",
+      children: [
+        {
+          text: "Energy",
+          detail: "SC5-EGY-01: evaluates current and alternative energy use based on ethical and sustainability considerations",
+          children: [
+           {
+              text: "Electric Circuit Interactive",
+          detail: "Investigate Ohm's Law",
+                    image: "img/Phetcircuit.png",
+          link: "https://phet.colorado.edu/en/simulations/circuit-construction-kit-dc",
+          linkLabel: "Open interactive"
+            }
+          ]
+        },
+        {
+          text: "Disease",
+          detail: "SC5-DIS-01: explains how an understanding of the causes of disease can be used to prevent and manage the spread of disease",
+          children: [
+           {
+              text: "Solve the Outbreak - Disease Detective",
+          detail: "Learning about nfectious diseases through gamification.",
+                    image: "img/disease.png",
+          link: "https://www.cdc.gov/mobile/applications/sto/web-app.html",
+          linkLabel: "Open interactive"
+            }
+          ]
+        }, 
+             {
+          text: "Materials",
+          detail: "SC5-MAT-01: assesses the uses of materials based on their physical and chemical properties",
+          children: [
+           {
+              text: "Ionic Bonding Interactive",
+          detail: "Matchmaker game to understand ionic charge and bonding",
+                    image: "img/ionic.png",
+          link: "https://interactivechemistry.org/Matchmaker2024/",
+          linkLabel: "Open interactive"
+            }
+          ]
+        },
+             {
+          text: "Environmental Sustainability",
+          detail: "SC5-ENV-01: analyses the impact of human activity on the natural world",
+          children: [
+          {
+              text: "Understanding Sea Level Change",
+          detail: "NASA's Interacitve Data Website",
+                    image: "img/NASA.png",
+          link: "https://sealevel.nasa.gov/",
+          linkLabel: "Open interactive"
+            }
+          ]
+        },
+      ]
+    },
+
+    {
+      text: "Year 10",
+      detail: "coming soon",
+      color: "#8a4fb0",
+      
+    },
+  ]
+};
+
+/* ==========================================================================
+   END OF EDIT AREA. You should not need to change anything below this line.
+   ========================================================================== */
+
+(function () {
+  var mapEl = document.getElementById("map");
+  var viewport = document.getElementById("viewport");
+  var svgNS = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("aria-hidden", "true");
+  mapEl.appendChild(svg);
+
+  var DEFAULT_COLORS = ["#2f6fb5", "#2e8b57", "#c26a1b", "#8a4fb0", "#b23a48", "#1b8a9b"];
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text) e.textContent = text;
+    return e;
+  }
+
+  function build(node, depth, color, branchIndex) {
+    var branch = el("div", "branch");
+    var hasKids = Array.isArray(node.children) && node.children.length > 0;
+
+    if (depth === 1) { color = node.color || DEFAULT_COLORS[branchIndex % DEFAULT_COLORS.length]; }
+    if (depth === 0) { color = node.color || "#1d4e89"; }
+
+    var n = el("div", "node" + (depth === 0 ? " root" : "") + (hasKids ? " has-kids" : ""));
+    n.style.setProperty("--c", color);
+
+    if (node.image) {
+      var img = document.createElement("img");
+      img.src = node.image;
+      img.alt = node.alt || "";
+      img.loading = "lazy";
+      img.addEventListener("load", draw);
+      n.appendChild(img);
+    }
+    n.appendChild(el("div", "title", node.text));
+    if (node.detail) n.appendChild(el("div", "detail", node.detail));
+    if (node.link) {
+      var a = el("a", "open-link", node.linkLabel || "Open resource");
+      a.href = node.link;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.addEventListener("click", function (e) { e.stopPropagation(); });
+      n.appendChild(a);
+    }
+
+    branch.appendChild(n);
+
+    if (hasKids) {
+      var tog = el("span", "toggle");
+      n.appendChild(tog);
+      n.setAttribute("role", "button");
+      n.setAttribute("tabindex", "0");
+
+      var kids = el("div", "children");
+      node.children.forEach(function (c, i) {
+        kids.appendChild(build(c, depth + 1, color, depth === 0 ? i : branchIndex));
+      });
+      branch.appendChild(kids);
+
+      var setOpen = function (open) {
+        kids.hidden = !open;
+        tog.textContent = open ? "\u2212" : "+";
+        n.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      setOpen(!!node.open);
+      n._setOpen = setOpen;
+      n._kids = kids;
+
+      var toggle = function () { setOpen(kids.hidden); draw(); };
+      n.addEventListener("click", toggle);
+      n.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      });
+    }
+    return branch;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var mapRect = mapEl.getBoundingClientRect();
+    svg.setAttribute("width", mapEl.scrollWidth);
+    svg.setAttribute("height", mapEl.scrollHeight);
+
+    mapEl.querySelectorAll(".branch").forEach(function (b) {
+      var parent = b.querySelector(":scope > .node");
+      var kids = b.querySelector(":scope > .children");
+      if (!parent || !kids || kids.hidden) return;
+      var pr = parent.getBoundingClientRect();
+      var x1 = pr.right - mapRect.left;
+      var y1 = pr.top + pr.height / 2 - mapRect.top;
+      var color = getComputedStyle(parent).getPropertyValue("--c") || "#999";
+
+      kids.querySelectorAll(":scope > .branch > .node").forEach(function (c) {
+        var cr = c.getBoundingClientRect();
+        var x2 = cr.left - mapRect.left;
+        var y2 = cr.top + cr.height / 2 - mapRect.top;
+        var mid = (x1 + x2) / 2;
+        var p = document.createElementNS(svgNS, "path");
+        p.setAttribute("d", "M" + x1 + "," + y1 + " C" + mid + "," + y1 + " " + mid + "," + y2 + " " + x2 + "," + y2);
+        p.setAttribute("fill", "none");
+        p.setAttribute("stroke", color.trim());
+        p.setAttribute("stroke-width", "2.5");
+        p.setAttribute("stroke-linecap", "round");
+        p.setAttribute("opacity", "0.7");
+        svg.appendChild(p);
+      });
+    });
+  }
+
+  function setAll(open) {
+    mapEl.querySelectorAll(".node.has-kids").forEach(function (n, i) {
+      // Keep the centre bubble open so the map never disappears
+      n._setOpen(i === 0 ? true : open);
+    });
+    draw();
+  }
+
+  mapEl.appendChild(build(MAP, 0, null, 0));
+  document.getElementById("expandAll").addEventListener("click", function () { setAll(true); });
+  document.getElementById("collapseAll").addEventListener("click", function () { setAll(false); });
+
+  window.addEventListener("resize", draw);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  window.addEventListener("load", draw);
+  draw();
+})();
+</script>
+</body>
+</html>
