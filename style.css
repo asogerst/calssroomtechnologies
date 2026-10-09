@@ -1747,7 +1747,7 @@ font-family: Arial, sans-serif;
     align-items: center;
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: 3;
     overflow: hidden;
     box-sizing: border-box;
 }
@@ -1763,6 +1763,66 @@ font-family: Arial, sans-serif;
     line-height: 1.8;
     text-align: justify;
 }
+.canva-section-Week11 {
+    min-height: 100vh;
+    background-color: #f0f0e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 80px 20px;
+    position: relative;
+    z-index: 2;              /* above .text-section-Week11 (z-index 2) */
+}
+
+.canva-container-Week11 {
+    width: 100%;
+    max-width: 1400px;       /* same as .embed-container-Week10 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #0b61b8;
+}
+
+.canva-embed-Week11 {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding-top: 0;          /* removes the square aspect-ratio box */
+    overflow: visible;
+    box-shadow: none;
+}
+
+.canva-embed-Week11 iframe {
+    position: static;
+    width: 100%;
+    height: 85vh;            /* same as the Wally iframe */
+    border: none;
+    border-radius: 15px;
+    background-color: #fff;
+}
+
+
+.canva-container-Week11 h2 {
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+
+
+.canva-credit-Week11 {
+    margin-top: 15px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+.canva-credit-Week11 a {
+    color: #0b61b8;
+    text-decoration: underline;
+}
+
 /* ==========================================================================
    16. Week 12
    ========================================================================== */
@@ -1808,19 +1868,151 @@ font-family: Arial, sans-serif;
     align-items: center;
     position: sticky;
     top: 0;
-    z-index: 2;
-    overflow: hidden;
+    z-index: 1;              /* above the Padlet section (z-index 2) */
+    overflow-y: auto;        /* scrolls if you add many rows */
     box-sizing: border-box;
+    padding: 40px 20px;
 }
 
 .text-container-Week12 {
     color: #0b61b8;
-    width: 68%;
+    width: 90%;
+    max-width: 1400px;
 }
 
-.text-container-Week12 p {
+.text-container-Week12 h2 {
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.8em;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.doc-grid-Week12 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding-bottom: 20px;
+}
+
+.doc-cell-Week12 {
+    background-color: #f0f0e8;
+    border-radius: 15px;
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+}
+
+.doc-cell-Week12 p {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.download-btn-Week12 {
+    display: inline-block;
+    background-color: #0b61b8;
+    color: #f0f0e8;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 12px 28px;
+    border-radius: 999px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.download-btn-Week12:hover {
+    background-color: #b5cade;
+    color: #0b61b8;
+}
+
+/* Fewer columns on smaller screens */
+@media (max-width: 900px) {
+    .doc-grid-Week12 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 500px) {
+    .doc-grid-Week12 { grid-template-columns: 1fr; }
+}
+.padlet-section-Week12 {
+    min-height: 100vh;
+    background-color: #f0f0e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.padlet-container-Week12 {
+    width: 100%;
+    max-width: 1400px;       /* same as the Wally and Canva embeds */
+    text-align: center;
+    color: #0b61b8;
+}
+
+.padlet-container-Week12 h2 {
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+.padlet-embed-Week12 iframe {
+    display: block;
+    width: 100%;
+    height: 85vh;            /* same as the Wally iframe */
+    border: none;
+    border-radius: 15px;
+    background-color: #f4f4f4;
+}
+.content-section-Week12 {
+    min-height: 100vh;
+    background-color: #d4d9d6;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 80px 20px;
+    position: relative;
+    z-index: 3;              /* above the Padlet section (z-index 2) */
+}
+
+.content-container-Week12 {
+    color: #0b61b8;
+    width: 68%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.content-container-Week12 p {
     font-family: Arial, sans-serif;
     font-size: 20px;
     line-height: 1.8;
     text-align: justify;
+    margin: 0;
+    width: 100%;
+}
+
+.content-container-Week12 h3 {
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.4em;
+    margin: 0;
+    text-align: center;
+}
+
+.content-container-Week12 img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
 }
