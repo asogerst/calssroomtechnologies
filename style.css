@@ -2188,4 +2188,45 @@ font-family: Arial, sans-serif;
 .feedback-table a:hover {
     color: #b5cade;
 }
-body:has(.feedback-section) .navbar { background-color: #d4d9d6; }
+
+/* ==========================================================================
+   18. Critical Evaluation
+   ========================================================================== */
+.evaluation-section {
+    min-height: 100vh;
+    background-color: #d4d9d6;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 120px 20px 80px;
+    position: relative;
+    z-index: 1;
+}
+
+.evaluation-container {
+    width: 68%;
+    max-width: 1000px;
+    color: #0b61b8;
+}
+
+.evaluation-container h1 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: clamp(2.5em, 9vw, 6em);
+    text-align: center;
+    margin: 0 0 40px;
+}
+
+.evaluation-container p {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1.5;
+    text-align: justify;
+    margin: 0 0 1.5em;
+}
+
+.evaluation-container p:last-child {
+    margin-bottom: 0;
+}
+body:has(.feedback-section) .navbar,
+body:has(.evaluation-section) .navbar { background-color: #d4d9d6; }
