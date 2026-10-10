@@ -1446,7 +1446,7 @@ font-family: Arial, sans-serif;
     align-items: center;
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: 3;
     overflow: hidden;
     box-sizing: border-box;
 }
@@ -1505,12 +1505,12 @@ font-family: Arial, sans-serif;
     justify-content: center;
     align-items: center;
     position: relative;
-    z-index: 3;              /* higher than .text-section-Week9's z-index: 2 */
+    z-index: 2;              /* lower than .text-section-Week9's z-index: 2 */
     box-sizing: border-box;
     padding: 60px 20px;
 }
 .text-container-Week9 h2 a {
-    color: #4988c6;
+    color: #0b61b8;
     text-decoration: underline;
     font-weight: 400;        /* lighter than the bold heading text around it */
 }
@@ -1711,6 +1711,7 @@ font-family: Arial, sans-serif;
     padding: 10px 26px;
     border-radius: 999px;
     transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 20px;
 }
 
 .link-btn-Week10:hover {
@@ -1778,6 +1779,7 @@ font-family: Arial, sans-serif;
     top: 0;
     z-index: 3;
     overflow: hidden;
+    overflow-y: auto;
     box-sizing: border-box;
 }
 
@@ -1861,6 +1863,7 @@ font-family: Arial, sans-serif;
     padding: 10px 26px;
     border-radius: 999px;
     transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 20px;
 }
 
 .link-btn-Week11:hover {
@@ -1927,16 +1930,18 @@ font-family: Arial, sans-serif;
     align-items: center;
     position: sticky;
     top: 0;
-    z-index: 1;              /* above the Padlet section (z-index 2) */
+    z-index: 2;              /* above the Padlet section (z-index 2) */
     overflow-y: auto;        /* scrolls if you add many rows */
     box-sizing: border-box;
     padding: 40px 20px;
+    align-items: flex-start;
 }
 
 .text-container-Week12 {
     color: #0b61b8;
     width: 90%;
     max-width: 1400px;
+    margin: auto;
 }
 
 .text-container-Week12 h2 {
@@ -2007,7 +2012,7 @@ font-family: Arial, sans-serif;
     box-sizing: border-box;
     padding: 40px 20px;
     position: relative;
-    z-index: 2;
+    z-index: 3;
 }
 
 .padlet-container-Week12 {
@@ -2040,7 +2045,7 @@ font-family: Arial, sans-serif;
     box-sizing: border-box;
     padding: 80px 20px;
     position: relative;
-    z-index: 3;              /* above the Padlet section (z-index 2) */
+    z-index: 4;              /* above the Padlet section (z-index 2) */
 }
 
 .content-container-Week12 {
@@ -2183,3 +2188,4 @@ font-family: Arial, sans-serif;
 .feedback-table a:hover {
     color: #b5cade;
 }
+body:has(.feedback-section) .navbar { background-color: #d4d9d6; }
